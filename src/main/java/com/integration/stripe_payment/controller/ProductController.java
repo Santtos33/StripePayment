@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/product/v1")
-public class ProductControllerCheckout {
+public class ProductController {
     private PaymentService stripeService;
     private RepositoryPayment repositoryPayment;
 
-    public ProductControllerCheckout(PaymentService stripeService, RepositoryPayment repositoryPayment ) {
+    public ProductController(PaymentService stripeService, RepositoryPayment repositoryPayment ) {
         this.stripeService = stripeService;
         this.repositoryPayment =repositoryPayment;
     }
@@ -24,14 +24,16 @@ public class ProductControllerCheckout {
 
     @PostMapping("/chekcout")
     public ResponseEntity<StripeResponse> checkout (@RequestBody PaymantRequest request) throws StripeException {
-         StripeResponse response = stripeService.createCheckout(request);
+         StripeResponse response = stripeService.createPayment(request);
          return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Payment> getPayment(@PathVariable Long id) {
         return repositoryPayment.findById(id)
-                .map(ResponseEntity::ok)
+               .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+
+
     }
 
 

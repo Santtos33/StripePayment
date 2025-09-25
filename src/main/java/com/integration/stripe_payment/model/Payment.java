@@ -2,7 +2,6 @@ package com.integration.stripe_payment.model;
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -21,6 +20,8 @@ public class Payment {
     private String correcy;
     private String callbackUrl;
     private PaymentStatus status;
+    @Column (unique = true)
+    private String idempotencia;
 
     @Column(unique = true)
     private String idepotencyKey;
