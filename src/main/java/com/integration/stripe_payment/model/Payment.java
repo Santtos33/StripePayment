@@ -1,8 +1,11 @@
 package com.integration.stripe_payment.model;
 
 
+import com.stripe.model.checkout.Session;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Data
 @Entity
@@ -19,12 +22,14 @@ public class Payment {
     private Long quantity;
     private String correcy;
     private String callbackUrl;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-    @Column (unique = true)
-    private String idempotencia;
+
+
 
     @Column(unique = true)
-    private String idepotencyKey;
+    private String idepotency;
 
 
 }

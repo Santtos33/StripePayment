@@ -7,9 +7,12 @@ import com.integration.stripe_payment.model.PaymentStatus;
 import com.integration.stripe_payment.repository.RepositoryPayment;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
-
 import com.stripe.param.checkout.SessionCreateParams;
+
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
 
 @Service
 public class PaymentService {
@@ -26,20 +29,34 @@ public class PaymentService {
 
     public StripeResponse createPayment(PaymantRequest request) {
 
+      String idepotency = request.getName()+ "_" + request.getAmount()+ System.currentTimeMillis()/1000;
+        Optional<Payment> existing = repo.findByIdepotency(idepotency);
+        if (existing.isPresent()){
+            return StripeResponse.builder()
+                    .mensage("Existing payment")
+                    .status(existing.get().getStatus())
+                    .sesionID(existing.get().getSessionId())
+                    .build();
+        }
+
         try {
 
             SessionCreateParams paramsCreate = params.params(request);
-            Session session = stripeService.createCheckoutSession(paramsCreate);
+            Session session = stripeService.createCheckoutSession(paramsCreate,idepotency);
 
             Payment payment = new Payment();
             payment.setSessionId(session.getId());
             payment.setPaymentIntentId(session.getPaymentIntent());
             payment.setAmount(request.getAmount());
             payment.setCorrecy(request.getCorrecy());
+            payment.setQuantity(request.getQuantity());
             payment.setName(request.getName());
-            payment.setStatus(PaymentStatus.PENDENTE);
+            payment.setStatus(PaymentStatus.APROVADO);
+            payment.setIdepotency(idepotency);
+
 
             repo.save(payment);
+
 
             return StripeResponse.builder()
                     .status(PaymentStatus.APROVADO)
@@ -49,7 +66,7 @@ public class PaymentService {
                     .build();
 
         } catch (StripeException e) {
-            Payment payment = new Payment();
+            Payment payment= new Payment();
             payment.setAmount(request.getAmount());
             payment.setCorrecy(request.getCorrecy());
             payment.setName(request.getName());

@@ -32,8 +32,6 @@ public class ProductController {
         return repositoryPayment.findById(id)
                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-
-
     }
 
 
