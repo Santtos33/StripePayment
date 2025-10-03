@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface RepositoryPayment extends JpaRepository<Payment,Long>{
     Optional<Payment> findByIdepotency(String idepotency);
+    Optional<Payment>  findBySessionUrl(String url);
 
 
 }
