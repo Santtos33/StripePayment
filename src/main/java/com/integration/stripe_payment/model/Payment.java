@@ -15,6 +15,7 @@ public class Payment {
     private Long id;
 
     private String sessionId;
+    private String sessionUrl;
     private String paymentIntentId;
 
     private Long amount;
